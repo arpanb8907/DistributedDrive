@@ -6,6 +6,8 @@ import mongoose from "mongoose";
 import uploadrouter from "./routes/uploadRoutes.js";
 import downloadRouter from "./routes/downloadRoutes.js";
 import deleteRouter from "./routes/deleteRoutes.js";
+import getfilesRouter from "./routes/getfilesRoutes.js";
+import sharefileRoutes from "./routes/sharefileRoutes.js";
 
 dotenv.config();
 
@@ -17,7 +19,8 @@ app.use('/api', router);
 app.use('/api',uploadrouter)
 app.use('/api',downloadRouter)
 app.use('/api',deleteRouter)
-
+app.use('/api',getfilesRouter)
+app.use('/api',sharefileRoutes)
 app.use(cors());
 
 
