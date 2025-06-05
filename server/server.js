@@ -3,6 +3,9 @@ import router from "./routes/authRoutes.js";
 import cors from "cors";
 import dotenv from "dotenv"
 import mongoose from "mongoose";
+import uploadrouter from "./routes/uploadRoutes.js";
+import downloadRouter from "./routes/downloadRoutes.js";
+import deleteRouter from "./routes/deleteRoutes.js";
 
 dotenv.config();
 
@@ -11,6 +14,10 @@ const PORT = 8000;
 
 app.use(express.json());
 app.use('/api', router);
+app.use('/api',uploadrouter)
+app.use('/api',downloadRouter)
+app.use('/api',deleteRouter)
+
 app.use(cors());
 
 
