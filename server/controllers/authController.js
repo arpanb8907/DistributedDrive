@@ -4,13 +4,14 @@ import jwt from'jsonwebtoken'
 
 export const registerUser = async (req, res) => {
   const { email, password } = req.body;
-  const emailtest = "!#$%^&*()_-+=~`?/:;,.";
-  const hasUppercase = "/[A-Z]/".test(password);
-  const hasLowercase = "/[a-z]/".test(password);
-  const containspecialchar = emailtest.test(password);
+  
+  const hasUppercase = /[A-Z]/.test(password);
+  const hasLowercase = /[a-z]/.test(password);
+  const containspecialchar = /!#$%^&*()_-+=~`?:;,./.test(password);
   const number = "1234567890";
+  const emailtest = /!#$%^&*()_-+=~`?:;,./.test(email);
 
-  const hasnumber = number.test(password);
+  const hasnumber = /[0-9]/.test(password);
   try {
     if (!email || !password)
       return res.status(400).json({ error: "Email or password required" });
@@ -18,7 +19,7 @@ export const registerUser = async (req, res) => {
     if (emailtest.test(email))
       return res.status(400).json({ error: "Inalid email format" });
 
-    if (password.length() < 6 || password.length() > 15)
+    if (password.length < 6 || password.length > 15)
       return res
         .status(400)
         .json({ error: "Password length must be between 6 and 15" });
@@ -37,7 +38,7 @@ export const registerUser = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedpwd = await bcrypt.hash(password, salt);
 
-    const newUser = new user({ email, hashedpwd });
+    const newUser = new user({ email, password : hashedpwd });
 
     await newUser.save();
 
@@ -59,16 +60,17 @@ export const loginUser = async (req, res) => {
     
     if (!userExists) return res.status(404).json({ message: "User not found" });
 
-    const ismatch = await bcrypt.compare(password, user.hashedpwd);
+    //console.log(password, user.hashedpwd);
+    const ismatch = await bcrypt.compare(password, userExists.password);
     
     if (ismatch) {
       // yet to create jwt token and pass
       const token = jwt.sign(
-        {id : user.__id, email: user.email},
+        {id : userExists.__id, email: userExists.email},
         process.env.JWT_SECRET,
         {expiresIn : '1hr'}
       );
-      return res.status(200).json({token});
+      return res.status(200).json({token, message : `${userExists.email} logged in successfully`});
     } else {
       return res.status(404).json({ message: "Incorrect credentials" });
     }

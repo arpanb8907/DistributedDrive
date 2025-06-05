@@ -4,7 +4,8 @@ const verifytoken = async(req,res,next)=>{
     
     const authHeader = req.headers.authorization;
 
-    if(!authHeader || !authHeader.startswith('Bearer')){
+    console.log("auth- header :" ,authHeader)
+    if(!authHeader || !authHeader.startsWith('Bearer')){
         return res.status(401).json({message: 'Unauthorized access'});
     }
 
