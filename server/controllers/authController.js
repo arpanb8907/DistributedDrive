@@ -7,17 +7,17 @@ export const registerUser = async (req, res) => {
   
   const hasUppercase = /[A-Z]/.test(password);
   const hasLowercase = /[a-z]/.test(password);
-  const containspecialchar = /!#$%^&*()_-+=~`?:;,./.test(password);
+  const containspecialchar = /[!@#$%^&*()_\-+=~`?:;,./]/.test(password);
   const number = "1234567890";
   const emailtest = /!#$%^&*()_-+=~`?:;,./.test(email);
 
   const hasnumber = /[0-9]/.test(password);
   try {
     if (!email || !password)
-      return res.status(400).json({ error: "Email or password required" });
+      return res.status(401).json({ error: "Email or password required" });
 
-    if (emailtest.test(email))
-      return res.status(400).json({ error: "Inalid email format" });
+    if (emailtest)
+      return res.status(404).json({ error: "Inalid email format" });
 
     if (password.length < 6 || password.length > 15)
       return res
@@ -25,6 +25,7 @@ export const registerUser = async (req, res) => {
         .json({ error: "Password length must be between 6 and 15" });
 
     if (!hasUppercase || !hasLowercase || !containspecialchar || !hasnumber)
+      
       return res.status(400).json({
         error:
           "Password must contain atleast one uppercase one lowercase and one special character and a number",
@@ -72,7 +73,7 @@ export const loginUser = async (req, res) => {
       );
       return res.status(200).json({token, message : `${userExists.email} logged in successfully`});
     } else {
-      return res.status(404).json({ message: "Incorrect credentials" });
+      return res.status(401).json({ message: "Incorrect credentials" });
     }
   } catch (error) {
     console.error(error);

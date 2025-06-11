@@ -1,5 +1,5 @@
 import express from 'express'
-import verifytoken from '../middleware/verifytoken';
+import verifytoken from '../middleware/verifytoken.js';
 
 const getfilesRouter = express.Router();
 
