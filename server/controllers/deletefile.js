@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import File from "../models/filemodel";
+import File from "../models/filemodel.js";
 
 const deletefile = async (req, res) => {
   try {

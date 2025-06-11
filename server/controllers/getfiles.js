@@ -1,4 +1,4 @@
-import File from "../models/filemodel";
+import File from "../models/filemodel.js";
 
 const getfiles = async (req, res) => {
   try {
