@@ -8,7 +8,7 @@ const deletefile = async (req, res) => {
 
     const filepath = path.resolve(file.path);
 
-    fs.unlink(filePath, async (err) => {
+    await fs.unlink(filepath, async (err) => {
       if (err) {
         console.error("File deletion error:", err);
         return res
@@ -19,7 +19,7 @@ const deletefile = async (req, res) => {
       // Remove file document from DB
       await File.findByIdAndDelete(req.params.id);
 
-      res.status(200).json({ message: "File deleted successfully" });
+      return res.status(200).json({ message: "File deleted successfully" });
     });
   } catch (error) {
     return res.status(500).json({ message: "Server error" });

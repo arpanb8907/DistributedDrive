@@ -1,6 +1,12 @@
 import React, { useState } from "react";
-import axios from 'axios'
-import { BrowserRouter, Routes, Route, Link, useNavigate } from 'react-router-dom'; 
+import axios from "axios";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Link,
+  useNavigate,
+} from "react-router-dom";
 
 import {
   LockClosedIcon,
@@ -10,8 +16,7 @@ import {
   EyeSlashIcon,
 } from "@heroicons/react/24/outline";
 
-const AuthForm = ({setIsLoggedIn}) => {
-  
+const AuthForm = ({ setIsLoggedIn }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
     name: "",
@@ -19,13 +24,13 @@ const AuthForm = ({setIsLoggedIn}) => {
     password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setisLoading] = useState(false);
   const navigate = useNavigate();
 
   const API_BASE_URL =
-  import.meta.env.MODE === "production"
-    ? import.meta.env.VITE_PRODUCTION_API_URL
-    : import.meta.env.VITE_API_BASE_URL;
-
+    import.meta.env.MODE === "production"
+      ? import.meta.env.VITE_PRODUCTION_API_URL
+      : import.meta.env.VITE_API_BASE_URL;
 
   const toggleForm = () => {
     setIsLogin(!isLogin);
@@ -37,82 +42,69 @@ const AuthForm = ({setIsLoggedIn}) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if(isLogin){
+    setisLoading(true);
+    if (isLogin) {
       // make a post req to login end-point
-      
 
       try {
-        const response = await axios.post(`${API_BASE_URL}/api/login`,formData)
+        const response = await axios.post(
+          `${API_BASE_URL}/api/login`,
+          formData
+        );
 
-        if(response.status === 200){
-          localStorage.setItem('token',response.data.token)
-          localStorage.setItem('userName', formData.email)
-          setIsLoggedIn(true)
-          
-          navigate('/dashboard')
-         
+        if (response.status === 200) {
+          localStorage.setItem("token", response.data.token);
+          localStorage.setItem("userName", formData.email);
+          setIsLoggedIn(true);
+
+          navigate("/dashboard");
+
           console.log(`${formData.email} logged in`);
-        }
-
-        else if(response.status === 401){
-          alert(`Incorrect Credentials`)
-        }
-
-        else if(response.status === 404){
-          alert(`User not found ... please register`)
-        }
-
-        else if(response.status === 400){
-          alert(`Email or Password required`)
-        }
-
-        else{
-          alert(`Server error ... please try after sometimes`)
+        } else if (response.status === 401) {
+          alert(`Incorrect Credentials`);
+        } else if (response.status === 404) {
+          alert(`User not found ... please register`);
+        } else if (response.status === 400) {
+          alert(`Email or Password required`);
+        } else {
+          alert(`Server error ... please try after sometimes`);
         }
       } catch (error) {
         console.log(error);
       }
-      
-    }
-
-    else{
+    } else {
       // make a post req to register end-point
-      
 
       try {
-        const response = await axios.post(`${API_BASE_URL}/api/register`,formData);
+        const response = await axios.post(
+          `${API_BASE_URL}/api/register`,
+          formData
+        );
 
-        if(response.status===200){
-          console.log("user registered")
-          navigate('/auth')
-        }
-
-
-        else if(response.status === 409){
-
-          alert(`${formData.email} is already registered ... please login`)
-        }
-
-        else if(response.status === 400){
-          alert(`Password must contain atleast one uppercase one lowercase and one special character and a number`)
-        }
-
-        else{
-          alert(`Server error ... please try after sometime`)
+        if (response.status === 200) {
+          console.log("user registered");
+          navigate("/auth");
+        } else if (response.status === 409) {
+          alert(`${formData.email} is already registered ... please login`);
+        } else if (response.status === 400) {
+          alert(
+            `Password must contain atleast one uppercase one lowercase and one special character and a number`
+          );
+        } else {
+          alert(`Server error ... please try after sometime`);
         }
       } catch (error) {
         console.error(error);
       }
-
     }
-    
+
+    setisLoading(false);
   };
 
   return (
-    <div className="max-w-md mx-auto bg-white/70 backdrop-blur-md p-8 rounded-xl shadow-lg border border-gray-200">
+    <div className="max-w-md mx-auto bg-white/70 backdrop-blur-md p-8 rounded-xl shadow-lg border border-gray-200 mt-25">
       <h2 className="text-2xl font-semibold text-center mb-6 text-indigo-700">
         {isLogin ? "Login to Your Account" : "Create a New Account"}
       </h2>
@@ -169,9 +161,34 @@ const AuthForm = ({setIsLoggedIn}) => {
         </div>
         <button
           type="submit"
-          className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-2 rounded-xl shadow hover:shadow-lg transition duration-200 hover:from-indigo-600 hover:to-purple-700 font-semibold cursor-pointer"
+          disabled={isLoading}
+          className={`w-full flex items-center justify-center bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-2 rounded-xl shadow hover:shadow-lg transition duration-200 hover:from-indigo-600 hover:to-purple-700 font-semibold cursor-pointer ${
+            isLoading ? "opacity-70 cursor-not-allowed" : ""
+          }`}
         >
-          {isLogin ? "Login" : "Register"}
+          {isLoading ? (
+            <svg
+              className="animate-spin h-5 w-5 mr-2 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 100 16 8 8 0 01-8-8z"
+              ></path>
+            </svg>
+          ) : null}
+          {isLoading ? "Processing..." : isLogin ? "Login" : "Register"}
         </button>
       </form>
       <p className="text-center mt-4 text-gray-600">
