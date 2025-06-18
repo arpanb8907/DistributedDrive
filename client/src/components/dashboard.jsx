@@ -1,16 +1,86 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import FileCard from "./filecard";
 import Sidebar from "./sidebar";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import axios from "axios";
 
 const Dashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [files, setfiles] = useState([]);
+
+  const API_BASE_URL =
+    import.meta.env.MODE === "production"
+      ? import.meta.env.VITE_PRODUCTION_API_URL
+      : import.meta.env.VITE_API_BASE_URL;
+
+  const fetchFiles = async () => {
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/api/getfiles?type=uploaded`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        console.log(response.data);
+        setfiles(response.data.files);
+      }
+    } catch (error) {
+      console.error("Error in fetching files", error);
+    }
+  };
+  useEffect(() => {
+    fetchFiles();
+  }, []);
+  const handleDelete = async (id) => {
+    try {
+      const response = await axios.delete(`${API_BASE_URL}/api/delete/files/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      if (response.status === 200) {
+        setfiles((prev) => prev.filter((file) => file._id != id));
+      }
+
+      else{
+        alert("Deletion not completed due to server error")
+      }
+    } catch (error) {
+      console.log("error while deleting", error);
+    }
+  };
+
+  const handleDownload = async (id) => {};
+
+  const formatSize = (size) => {
+    if (size < 1024) return size + "B";
+
+    if (size < 1024 * 1024) {
+      return (size / 1024).toFixed(1) + "KB";
+    } else {
+      return (size / (1024 * 1024)).toFixed(1) + "MB";
+    }
+  };
+
+  const formatDate = (isoDate) => {
+    const date = new Date(isoDate);
+    return date.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
 
   return (
     <div className="flex h-screen bg-gray-100 overflow-hidden">
       {/* Sidebar for Desktop */}
       <aside className="hidden md:block w-64 bg-white border-r border-gray-200 shadow-sm">
-        <Sidebar />
+        <Sidebar onUploadSuccess={fetchFiles} />
       </aside>
 
       {/* Sidebar Overlay for Mobile */}
@@ -18,7 +88,7 @@ const Dashboard = () => {
         <div className="fixed inset-0 z-40 flex md:hidden">
           {/* Sidebar Panel */}
           <div className="w-64 bg-white border-r border-gray-200 shadow-lg">
-            <Sidebar />
+            <Sidebar onUploadSuccess={fetchFiles} />
           </div>
           {/* Backdrop */}
           <div
@@ -43,16 +113,22 @@ const Dashboard = () => {
 
         {/* Main Section */}
         <main className="p-4 sm:p-6">
-          {/* Heading (hidden on mobile, shown on md+) */}
           <h1 className="hidden md:block text-2xl font-bold text-gray-800 mb-6">
             My Files
           </h1>
 
           <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-            <FileCard name="resume.pdf" size="1.2 MB" date="08 Jun 2025" />
-            <FileCard name="project.zip" size="5.6 MB" date="07 Jun 2025" />
-            <FileCard name="image.png" size="740 KB" date="06 Jun 2025" />
-            {/* Add more cards or map real data here */}
+            {files.map((file) => (
+              <FileCard
+                key={file._id}
+                id={file._id}
+                name={file.originalname}
+                size={formatSize(file.size)}
+                date={formatDate(file.createdAt)}
+                onDelete={handleDelete}
+                onDownload={handleDownload}
+              />
+            ))}
           </div>
         </main>
       </div>

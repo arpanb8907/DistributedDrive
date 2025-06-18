@@ -8,20 +8,24 @@ import {
   TrashIcon,
 } from "@heroicons/react/24/outline";
 
-const FileCard = ({ name, size, date }) => {
+const FileCard = ({ id, name, size, date, onDelete, onDownload }) => {
+
+  
   return (
-    <div className="bg-white p-4 rounded-xl shadow-sm hover:shadow-md transition duration-200 w-full">
+    <div className="bg-white p-4 rounded-xl shadow-sm hover:shadow-md hover:scale-105 transform transition duration-200 w-full cursor-pointer">
       {/* Header Section */}
       <div className="flex justify-between items-start gap-2">
-        <p className="text-base sm:text-lg font-semibold truncate max-w-[80%]">{name}</p>
+        <p className="text-base sm:text-lg font-semibold truncate max-w-[80%]">
+          {name}
+        </p>
 
         {/* 3-dot Menu */}
-        <Menu as="div" className="relative">
+        <Menu as="div" className="relative ">
           <MenuButton className="p-1.5 rounded-full hover:bg-gray-100 transition">
             <EllipsisVerticalIcon className="h-5 w-5 text-gray-600" />
           </MenuButton>
 
-          <MenuItems className="absolute right-0 z-20 mt-2 w-44 origin-top-right bg-white divide-y divide-gray-100 rounded-lg shadow-lg ring-1 ring-black/5 focus:outline-none">
+          <MenuItems className="absolute right-0 z-20 mt-2 w-44 origin-top-right bg-white divide-y divide-gray-100 rounded-lg shadow-lg ring-1 ring-black/5 focus:outline-none ">
             <div className="px-1 py-1 space-y-1">
               {[
                 { icon: EyeIcon, label: "Preview" },
@@ -32,7 +36,9 @@ const FileCard = ({ name, size, date }) => {
                   {({ active }) => (
                     <button
                       className={`${
-                        active ? "bg-indigo-100 text-indigo-700" : "text-gray-700"
+                        active
+                          ? "bg-indigo-100 text-indigo-700 cursor-pointer"
+                          : "text-gray-700"
                       } flex items-center gap-2 w-full rounded-md px-3 py-2 text-sm`}
                     >
                       <Icon className="h-4 w-4" />
@@ -46,9 +52,10 @@ const FileCard = ({ name, size, date }) => {
               <MenuItem>
                 {({ active }) => (
                   <button
+                    onClick={() => onDelete(id)} // 🔧 call prop function
                     className={`${
                       active ? "bg-red-100 text-red-700" : "text-red-600"
-                    } flex items-center gap-2 w-full rounded-md px-3 py-2 text-sm`}
+                    } flex items-center gap-2 w-full rounded-md px-3 py-2 text-sm cursor-pointer`}
                   >
                     <TrashIcon className="h-4 w-4" />
                     Delete
@@ -67,7 +74,10 @@ const FileCard = ({ name, size, date }) => {
       </div>
 
       {/* Download Button */}
-      <button className="mt-3 inline-flex items-center gap-1 text-indigo-600 text-sm hover:underline hover:text-indigo-700 transition">
+      <button
+        onClick={() => onDownload(id)}
+        className="mt-3 inline-flex items-center gap-1 text-indigo-600 text-sm hover:underline hover:text-indigo-700 transition cursor-pointer"
+      >
         <CloudArrowDownIcon className="h-4 w-4" />
         Download
       </button>

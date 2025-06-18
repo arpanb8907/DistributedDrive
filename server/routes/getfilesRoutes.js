@@ -1,5 +1,6 @@
 import express from 'express'
 import verifytoken from '../middleware/verifytoken.js';
+import getfiles from '../controllers/getfiles.js';
 
 const getfilesRouter = express.Router();
 

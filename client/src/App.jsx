@@ -10,16 +10,19 @@ import AuthForm from "./pages/authform";
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
+  const [flag,setflag] = useState(false)
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     setIsLoggedIn(!!token);
+    setflag(true);
   }, []);
 
   const handleGetstarted = () => {
     setShowWelcome(false);
   };
 
+  if(!flag) return null;
   return (
     <Router>
       <Navbar />

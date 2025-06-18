@@ -4,8 +4,8 @@ const verifytoken = async(req,res,next)=>{
     
     const authHeader = req.headers.authorization;
 
-    console.log("auth- header :" ,authHeader)
-    if(!authHeader || !authHeader.startsWith('Bearer')){
+    //console.log("auth- header :" ,authHeader)
+    if(!authHeader || !authHeader.startsWith('Bearer ')){
         return res.status(401).json({message: 'Unauthorized access'});
     }
 
@@ -16,7 +16,7 @@ const verifytoken = async(req,res,next)=>{
         if(err){
             return res.status(404).json({message: 'Invalid token'});
         }
-
+        //console.log("Token verified. Decoded user:", decoded);
         req.user = decoded
         next();
     });
