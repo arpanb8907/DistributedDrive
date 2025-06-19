@@ -10,7 +10,7 @@ import {
 
 const navItems = [
   { label: "My Drive", icon: FolderIcon },
-  { label: "Starred", icon: StarIcon },
+  { label: "Bookmarked", icon: StarIcon },
   { label: "Shared with me", icon: UsersIcon },
   { label: "Trash", icon: TrashIcon },
 ];
