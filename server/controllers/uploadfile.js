@@ -4,7 +4,7 @@ const uploadfile = async (req, res) => {
   try {
     if (!req.file) return res.status(404).json({ message: "File not found" });
 
-    // Here we need to store the file actually in server along with meta data of file in Database
+    // Here we need to store the file actually in database along with meta data of file in Database
 
     const { filename, originalname, mimetype, size, path } = req.file;
 

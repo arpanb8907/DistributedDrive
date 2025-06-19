@@ -3,6 +3,7 @@ import File from "../models/filemodel.js";
 const verifyOwner = async (req, res, next) => {
   try {
     const file = await File.findById(req.params.id);
+    console.log(req.params)
     if (!file) return res.status(404).json({ message: "File not found" });
 
     const isOwner = file.user.toString() === req.user.id;

@@ -6,9 +6,10 @@ import {
   ShareIcon,
   PencilIcon,
   TrashIcon,
+  StarIcon,
 } from "@heroicons/react/24/outline";
 
-const FileCard = ({ id, name, size, date, onDelete, onDownload }) => {
+const FileCard = ({ id, name, size, date, onDelete, onDownload,onMenuclick }) => {
 
   
   return (
@@ -31,10 +32,12 @@ const FileCard = ({ id, name, size, date, onDelete, onDownload }) => {
                 { icon: EyeIcon, label: "Preview" },
                 { icon: ShareIcon, label: "Share" },
                 { icon: PencilIcon, label: "Rename" },
+                {icon : StarIcon , label : "Bookmark"}
               ].map(({ icon: Icon, label }) => (
                 <MenuItem key={label}>
                   {({ active }) => (
                     <button
+                      onClick={()=> onMenuclick(label)}
                       className={`${
                         active
                           ? "bg-indigo-100 text-indigo-700 cursor-pointer"
@@ -62,6 +65,8 @@ const FileCard = ({ id, name, size, date, onDelete, onDownload }) => {
                   </button>
                 )}
               </MenuItem>
+
+                
             </div>
           </MenuItems>
         </Menu>
