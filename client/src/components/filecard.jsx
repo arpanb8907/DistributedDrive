@@ -6,13 +6,26 @@ import {
   ShareIcon,
   PencilIcon,
   TrashIcon,
-  StarIcon,
+  
+} from "@heroicons/react/24/outline";
+import {
+  // ...
+  StarIcon as StarIconOutline,
 } from "@heroicons/react/24/outline";
 
-const FileCard = ({ id, name, size, date, onDelete, onDownload,onMenuclick }) => {
+import {
+  StarIcon as StarIconSolid,
+} from "@heroicons/react/24/solid";
+import { useState } from "react";
 
+
+const FileCard = ({ id, name, size, date, onDelete, onDownload,onMenuclick,bookmarked }) => {
+
+  const [menuopen,setMenuopen] = useState(false)
   
   return (
+
+    
     <div className="bg-white p-4 rounded-xl shadow-sm hover:shadow-md hover:scale-105 transform transition duration-200 w-full cursor-pointer">
       {/* Header Section */}
       <div className="flex justify-between items-start gap-2">
@@ -21,8 +34,10 @@ const FileCard = ({ id, name, size, date, onDelete, onDownload,onMenuclick }) =>
         </p>
 
         {/* 3-dot Menu */}
-        <Menu as="div" className="relative ">
-          <MenuButton className="p-1.5 rounded-full hover:bg-gray-100 transition">
+        <Menu as="div" className="relative " open={menuopen} onClose ={()=> setMenuopen(false)}>
+          <MenuButton 
+            onClick={()=>setMenuopen(!menuopen)}
+          className="p-1.5 rounded-full hover:bg-gray-100 transition">
             <EllipsisVerticalIcon className="h-5 w-5 text-gray-600" />
           </MenuButton>
 
@@ -32,12 +47,21 @@ const FileCard = ({ id, name, size, date, onDelete, onDownload,onMenuclick }) =>
                 { icon: EyeIcon, label: "Preview" },
                 { icon: ShareIcon, label: "Share" },
                 { icon: PencilIcon, label: "Rename" },
-                {icon : StarIcon , label : "Bookmark"}
+                {icon : bookmarked? StarIconSolid : StarIconOutline, label : "Bookmark"}
               ].map(({ icon: Icon, label }) => (
                 <MenuItem key={label}>
                   {({ active }) => (
                     <button
-                      onClick={()=> onMenuclick(label)}
+                      onClick={(e)=> {
+                       //e.preventDefault()
+                        onMenuclick(label)
+
+                        setTimeout(() => {
+                          setMenuopen(false)
+                        }, 5000);
+                        
+
+                      }}
                       className={`${
                         active
                           ? "bg-indigo-100 text-indigo-700 cursor-pointer"

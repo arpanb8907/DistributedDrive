@@ -8,22 +8,23 @@ const getfiles = async (req, res) => {
     const type = req.query.type;
     const userId = req.user.id;
     let flag = 0;
-
+   
     const objectUserId = new mongoose.Types.ObjectId(userId);
     
     if (type === "uploaded") {
       files = await File.find({ user: objectUserId });
       flag = 1;
-    } else if (type === "shared") {
+    } else if (type === "sharedwithme") {
       files = await File.find({ sharedWith: objectUserId });
 
       flag = 1;
-    } else if (type === "starred") {
+    } else if (type === "bookmarked") {
       files = await File.find({
         isStarred: true,
 
-        $or: [{ user: objectUserId }, { sharedWith: objectUserId }],
       });
+
+      
       flag = 1;
     }
 
