@@ -5,7 +5,7 @@ const togglefile = async (req, res) => {
     file.isStarred = !file.isStarred;
     await file.save();
 
-    res.status(200).json({
+    return res.status(200).json({
       message: `File ${file.isStarred ? "starred" : "unstarred"} successfully`,
       file,
     });

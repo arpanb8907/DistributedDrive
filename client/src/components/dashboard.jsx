@@ -3,6 +3,7 @@ import FileCard from "./filecard";
 import Sidebar from "./sidebar";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
+import { useLocation } from "react-router-dom";
 
 const Dashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -11,7 +12,26 @@ const Dashboard = () => {
   const [previewFile, setPreviewFile] = useState(null);
   const [isRenameOpen, setIsRenameOpen] = useState(false);
   const [newfileName, setNewfileName] = useState("");
-  const [currentfile,setcurrentfile] = useState(null);
+  const [currentfile, setcurrentfile] = useState(null);
+  const location = useLocation();
+  const [type, setType] = useState("uploaded");
+
+  useEffect(() => {
+    const getTypeFile = () => {
+      if (location.pathname === "/") return "uploaded";
+
+      if (location.pathname === "/dashboard/bookmarked") return "bookmarked";
+      if (location.pathname === "/dashboard/trash") return "trash";
+      if (location.pathname === "/dashboard/SharedWithme")
+        return "sharedwithme";
+      
+      return 'uploaded'
+    };
+
+    const newtype = getTypeFile();
+    //console.log(newtype)
+    setType(newtype)
+  }, [location.pathname]);
 
   const API_BASE_URL =
     import.meta.env.MODE === "production"
@@ -19,9 +39,10 @@ const Dashboard = () => {
       : import.meta.env.VITE_API_BASE_URL;
 
   const fetchFiles = async () => {
+    console.log(type)
     try {
       const response = await axios.get(
-        `${API_BASE_URL}/api/getfiles?type=uploaded`,
+        `${API_BASE_URL}/api/getfiles?type=${type}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -39,7 +60,8 @@ const Dashboard = () => {
   };
   useEffect(() => {
     fetchFiles();
-  }, []);
+  }, [type]);
+
   const handleDelete = async (id) => {
     try {
       const response = await axios.delete(
@@ -81,32 +103,66 @@ const Dashboard = () => {
       year: "numeric",
     });
   };
-  const handlerenameFile = async(e) => {
+  const handlerenameFile = async (e) => {
     e.preventDefault();
     setNewfileName(newfileName);
 
     try {
-          const response = await axios.patch(
-            `${API_BASE_URL}/api/patch/rename/${currentfile._id}`,
-            {newfileName},
-            {
-              headers: {
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
-              },
-            }
-          );
-
-          if (response.status === 200) {
-            // update files in the client side
-            fetchFiles();
-          } else if(response.status === 401 || response.status===403) {
-            alert(`New file name can not be empty and must be different from the previous one`);
-          }
-        } catch (error) {
-          console.log(error);
+      const response = await axios.patch(
+        `${API_BASE_URL}/api/patch/rename/${currentfile._id}`,
+        { newfileName },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
+      );
+
+      if (response.status === 200) {
+        // update files in the client side
+        fetchFiles();
+      } else if (response.status === 401 || response.status === 403) {
+        alert(
+          `New file name can not be empty and must be different from the previous one`
+        );
+      }
+    } catch (error) {
+      console.log(error);
+    }
     setIsRenameOpen(false);
   };
+
+  const bookmarkfile = async (currentfile) => {
+    try {
+      const response = await axios.patch(
+        `${API_BASE_URL}/api/files/${currentfile._id}/star`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        await fetchFiles();
+        const updatedfile = response.data.file;
+
+        console.log(
+          `${updatedfile.isStarred} is the current status of the file`
+        );
+        console.log(
+          `${updatedfile.originalname} is bookmarked current bookmark`
+        );
+      } else {
+        console.log("Server error");
+        alert(`Server error`);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const handleMenuclick = async (label, file) => {
     switch (label) {
       case "Preview":
@@ -127,7 +183,9 @@ const Dashboard = () => {
         break;
 
       case "Bookmark":
-        console.log("Bookmarked");
+        //console.log(file.isStarred);
+
+        bookmarkfile(file);
         break;
       default:
         break;
@@ -184,6 +242,7 @@ const Dashboard = () => {
                 onDelete={handleDelete}
                 onDownload={handleDownload}
                 onMenuclick={(label) => handleMenuclick(label, file)}
+                bookmarked={file.isStarred}
               />
             ))}
           </div>

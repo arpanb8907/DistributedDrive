@@ -7,17 +7,19 @@ import {
   UsersIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const navItems = [
-  { label: "My Drive", icon: FolderIcon },
-  { label: "Bookmarked", icon: StarIcon },
-  { label: "Shared with me", icon: UsersIcon },
-  { label: "Trash", icon: TrashIcon },
+  { label: "My Drive", icon: FolderIcon , path : "/dashboard" },
+  { label: "Bookmarked", icon: StarIcon , path : '/dashboard/bookmarked'},
+  { label: "Shared with me", icon: UsersIcon ,path : '/dashboard/SharedWithme'},
+  { label: "Trash", icon: TrashIcon, path : '/dashboard/trash' },
 ];
 
 const Sidebar = ({ onUploadSuccess}) => {
-  const [active, setActive] = useState("My Drive");
   const [showSourceMenu, setShowSourceMenu] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   // Create a reference to the hidden input element
   const fileInputRef = useRef(null);
@@ -109,12 +111,12 @@ const Sidebar = ({ onUploadSuccess}) => {
       <nav className="space-y-2">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive = active === item.label;
+          const isActive = location.pathname === item.path;
 
           return (
             <div
               key={item.label}
-              onClick={() => setActive(item.label)}
+              onClick={() => navigate(item.path)}
               className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-all
                 ${
                   isActive

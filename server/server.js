@@ -9,6 +9,7 @@ import deleteRouter from "./routes/deleteRoutes.js";
 import getfilesRouter from "./routes/getfilesRoutes.js";
 import sharefileRoutes from "./routes/sharefileRoutes.js";
 import patchRouter from "./routes/patchRoutes.js";
+import togglestarRoutes from "./routes/togglestarRoutes.js";
 
 dotenv.config();
 
@@ -28,6 +29,7 @@ app.use('/api',deleteRouter)
 app.use('/api',getfilesRouter)
 app.use('/api',sharefileRoutes)
 app.use('/api',patchRouter)
+app.use('/api',togglestarRoutes)
 
 //it will make uploads/ folder accessible via /uploads route
 app.use('/uploads',express.static('uploads'));

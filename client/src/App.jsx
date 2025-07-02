@@ -45,7 +45,18 @@ function App() {
           path="/dashboard"
           element={isLoggedIn ? <Dashboard /> : <Navigate to="/auth" />}
         />
-
+        <Route
+          path="/dashboard/bookmarked"
+          element={isLoggedIn ? <Dashboard /> : <Navigate to="/auth" />}
+        />
+        <Route
+          path="/dashboard/trash"
+          element={isLoggedIn ? <Dashboard /> : <Navigate to="/auth" />}
+        />
+        <Route
+          path="/dashboard/SharedWithme"
+          element={isLoggedIn ? <Dashboard /> : <Navigate to="/auth" />}
+        />
        <Route path="/auth" element={<AuthForm setIsLoggedIn={setIsLoggedIn} />} />
 
 
