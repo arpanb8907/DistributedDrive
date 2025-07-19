@@ -1,6 +1,7 @@
 import express from 'express'
 import verifytoken from '../middleware/verifytoken.js';
 import verifyOwner from '../middleware/verifyOwner.js';
+import sharefiles from '../controllers/sharefiles.js';
 
 const sharefileRoutes = express.Router();
 

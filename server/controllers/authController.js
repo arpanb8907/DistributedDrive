@@ -50,15 +50,15 @@ export const registerUser = async (req, res) => {
   }
 };
 
-export const loginUser = async (req, res) => {
-  const { email, password } = req.body;
+  export const loginUser = async (req, res) => {
+    const { email, password } = req.body;
 
-  try {
-    if (!email || !password)
-      return res.status(400).json({ error: "Email or Password required" });
+    try {
+      if (!email || !password)
+        return res.status(400).json({ error: "Email or Password required" });
 
-    const userExists = await user.findOne({ email });
-    
+      const userExists = await user.findOne({ email });
+      
     if (!userExists) return res.status(404).json({ message: "User not found" });
 
     //console.log(password, user.hashedpwd);

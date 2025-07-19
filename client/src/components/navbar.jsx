@@ -16,8 +16,8 @@ import {
 import { useNavigate } from "react-router-dom";
 
 const navigation = [
-  { name: "My files", href: "/myfiles", current: true },
-  { name: "Shared with me", href: "sharedWithMe", current: false },
+  { name: "My files", href: "/dashboard", current: true },
+  { name: "Shared with me", href: "/dashboard", current: false },
   { name: "History", href: "#", current: false },
   { name: "settings", href: "settings", current: false },
 ];

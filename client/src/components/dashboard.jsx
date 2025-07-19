@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import FileCard from "./filecard";
 import Sidebar from "./sidebar";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
+import ShareModal from "./sharemodal";
 
 const Dashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -15,6 +16,9 @@ const Dashboard = () => {
   const [currentfile, setcurrentfile] = useState(null);
   const location = useLocation();
   const [type, setType] = useState("uploaded");
+  const [sharemodalOpen, setShareModalOpen] = useState(false);
+  const [restriction, setRestriction] = useState(true);
+  const restrictionRef = useRef(restriction);
 
   useEffect(() => {
     const getTypeFile = () => {
@@ -24,13 +28,13 @@ const Dashboard = () => {
       if (location.pathname === "/dashboard/trash") return "trash";
       if (location.pathname === "/dashboard/SharedWithme")
         return "sharedwithme";
-      
-      return 'uploaded'
+
+      return "uploaded";
     };
 
     const newtype = getTypeFile();
     //console.log(newtype)
-    setType(newtype)
+    setType(newtype);
   }, [location.pathname]);
 
   const API_BASE_URL =
@@ -39,7 +43,7 @@ const Dashboard = () => {
       : import.meta.env.VITE_API_BASE_URL;
 
   const fetchFiles = async () => {
-    console.log(type)
+    console.log(type);
     try {
       const response = await axios.get(
         `${API_BASE_URL}/api/getfiles?type=${type}`,
@@ -61,6 +65,10 @@ const Dashboard = () => {
   useEffect(() => {
     fetchFiles();
   }, [type]);
+
+  useEffect(() => {
+    restrictionRef.current = restriction;
+  }, [restriction]);
 
   const handleDelete = async (id) => {
     try {
@@ -147,6 +155,7 @@ const Dashboard = () => {
       if (response.status === 200) {
         await fetchFiles();
         const updatedfile = response.data.file;
+        setcurrentfile(updatedfile);
 
         console.log(
           `${updatedfile.isStarred} is the current status of the file`
@@ -163,6 +172,56 @@ const Dashboard = () => {
     }
   };
 
+  const handleClose = async (targetedusername) => {
+    
+    console.log(targetedusername)
+    setShareModalOpen(false);
+
+    console.log(restrictionRef.current);
+    if (!restrictionRef.current)
+      alert(`Make the file public before sharing with anyone`);
+
+    try {
+      const response = await axios.patch(
+        `${API_BASE_URL}/api/sharefiles/${currentfile._id}`,
+        {targetedusername},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      if(response.status === 200){
+        await fetchFiles();
+        const updatedfiles = response.data.file 
+        setcurrentfile(updatedfiles)
+
+        console.log()
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleRestriction = async (truthvalue) => {
+    console.log(truthvalue);
+    setRestriction(truthvalue);
+    restrictionRef.current = truthvalue;
+  };
+
+  const copyLink = async (e) => {
+    e.preventDefault();
+
+    try {
+      const shareableURL = `${window.location.origin}/file/shared/${currentfile.sharedLink}`;
+      await navigator.clipboard.writeText(shareableURL);
+      alert(`Link copied to clipboard`);
+    } catch (error) {
+      console.error(error);
+      alert(`Failed to copy the link`);
+    }
+  };
   const handleMenuclick = async (label, file) => {
     switch (label) {
       case "Preview":
@@ -173,7 +232,8 @@ const Dashboard = () => {
 
       case "Share":
         console.log("Shared");
-
+        setShareModalOpen(true);
+        setcurrentfile(file);
         break;
 
       case "Rename":
@@ -331,6 +391,18 @@ const Dashboard = () => {
                 </button>
               </div>
             </div>
+          </>
+        )}
+
+        {sharemodalOpen && (
+          <>
+            <div className="fixed inset-0 bg-white/10 backdrop-blur-md z-40 transition-opacity"></div>
+            <ShareModal
+              file={{ ...currentfile, isPublic: restriction }}
+              onClose={handleClose}
+              onTogglePublic={handleRestriction}
+              onCopyLink={copyLink}
+            />
           </>
         )}
       </div>
