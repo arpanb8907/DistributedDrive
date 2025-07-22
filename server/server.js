@@ -17,7 +17,7 @@ const app = express();
 const PORT = 8000;
 
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: ["http://localhost:5173","http://d-drive-frontend.s3-website.ap-south-1.amazonaws.com"],
   credentials: true,
 }));
 
