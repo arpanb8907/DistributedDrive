@@ -17,7 +17,7 @@ const app = express();
 const PORT = 8000;
 
 app.use(cors({
-  origin: ["http://localhost:5173","https://d2h9gt1zdxuy78.cloudfront.net"],
+  origin: ["http://localhost:5173","https://distributed-drive.vercel.app"],
   credentials: true,
 }));
 
