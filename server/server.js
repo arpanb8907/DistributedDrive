@@ -17,7 +17,7 @@ const app = express();
 const PORT = 8000;
 
 app.use(cors({
-  origin: ["http://localhost:5173","https://distributed-drive.vercel.app"],
+  origin: ["http://localhost:5173","https://distributed-drive.vercel.app","http://d-drive-frontend.s3-website.ap-south-1.amazonaws.com"],
   credentials: true,
 }));
 
